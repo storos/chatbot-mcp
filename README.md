@@ -1,389 +1,405 @@
-# Order Management System - MCP Project
+# E-commerce Post-Sales Support Assistant 🤖
 
-Spring Boot Order API ve MCP (Model Context Protocol) Server içeren tam entegre sipariş yönetim sistemi.
+An intelligent AI-powered customer support assistant for e-commerce platforms, built with **Model Context Protocol (MCP)** for dynamic function discovery and **OpenAI GPT-4** for natural language understanding.
 
-## 🏗️ Proje Yapısı
+## 🌟 Overview
+
+This project implements a complete post-sales support chatbot system that helps customers with their order management through natural conversation. The system uses MCP to dynamically discover available functions from backend services, making it extensible and maintainable without hardcoded function definitions.
+
+### Key Features
+
+- **🔍 Dynamic Function Discovery**: Automatically discovers available operations from MCP server
+- **🤖 Generic Parameter Collection**: Universal rules for gathering required parameters before function calls
+- **💬 Conversational AI**: Natural language processing with OpenAI GPT-4
+- **📝 Session-based History**: Maintains conversation context across interactions
+- **🌐 Modern Web UI**: React TypeScript interface with real-time updates
+- **🐳 Full Docker Support**: Containerized microservices architecture
+- **🔄 CORS-enabled**: Browser-friendly API with proper CORS configuration
+
+## 🏗️ Architecture
 
 ```
-chatbot_genai_mcp/
-├── order-api/              # Spring Boot REST API
-│   ├── src/
-│   ├── Dockerfile
-│   └── pom.xml
-├── order-api-mcp/          # MCP Server (Node.js/TypeScript) - Legacy
-│   ├── src/
-│   ├── Dockerfile
-│   ├── web-server.js       # Browser arayüzü
-│   └── package.json
-├── order-api-mcp-java/     # MCP Server (Java/Spring AI) - Production
-│   ├── src/
-│   ├── Dockerfile
-│   ├── pom.xml
-│   └── build-docker.sh
-└── docker-compose.yml      # Tüm servisler
+┌─────────────────────────────────────────────────────────────┐
+│                       Chat UI (React)                        │
+│                    http://localhost:3000                     │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ REST API
+┌───────────────────────────▼─────────────────────────────────┐
+│                    Chat API (Spring Boot)                    │
+│              OpenAI Integration + MCP Client                 │
+│                    http://localhost:8082                     │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ MCP Protocol
+┌───────────────────────────▼─────────────────────────────────┐
+│              Order API MCP Server (Spring Boot)              │
+│              Dynamic Tool Discovery + Execution              │
+│                    http://localhost:8081                     │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ REST API
+┌───────────────────────────▼─────────────────────────────────┐
+│                Order API (Spring Boot)                       │
+│                   Order Management CRUD                      │
+│                    http://localhost:8080                     │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 Hızlı Başlangıç
+## 🚀 Quick Start
 
-### Tüm Servisleri Docker Compose ile Başlatın
+### Prerequisites
+
+- Docker & Docker Compose
+- OpenAI API Key
+
+### 1. Set Your OpenAI API Key
 
 ```bash
-# Tüm servisleri başlat
+export OPENAI_API_KEY="your-openai-api-key-here"
+```
+
+### 2. Start All Services
+
+```bash
 docker-compose up -d
-
-# Durumu kontrol et
-docker-compose ps
-
-# Logları görüntüle
-docker-compose logs -f
 ```
 
-### Servislere Erişim
+### 3. Access the Chat Interface
 
-- **Order API (Spring Boot)**: http://localhost:8080/api/orders
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **MCP Web Interface (Node.js)**: http://localhost:3001
-- **MCP API**: http://localhost:3001/api/tools
-- **MCP Server (Java)**: STDIO mode (Claude Desktop entegrasyonu için)
+Open your browser and navigate to: **http://localhost:3000**
 
-## 📦 Servisler
+### 4. Start Chatting
 
-### 1. Order API (Spring Boot)
-Java 17 ve Spring Boot 3.2.0 ile geliştirilmiş RESTful API.
+Try these examples:
+- "Show me my orders"
+- "I want to cancel my order" (the assistant will ask which one if you have multiple)
+- "Cancel order number 1"
+- "What's the status of order 2?"
 
-**Özellikler:**
-- CRUD operasyonları
-- Bean Validation
-- Global exception handling
-- OpenAPI/Swagger dokümantasyonu
-- Mock data
+## 📦 Components
 
-**Endpoints:**
-- `GET /api/orders` - Tüm siparişleri listele
-- `GET /api/orders/{id}` - ID'ye göre sipariş getir
-- `POST /api/orders` - Yeni sipariş oluştur
-- `PUT /api/orders/{id}` - Sipariş güncelle
-- `DELETE /api/orders/{id}` - Sipariş sil
+### 1. **Chat UI** (React + TypeScript)
+A modern, responsive chat interface with:
+- Real-time message updates
+- Conversation history display
+- Session management
+- Function call indicators
+- Beautiful animations
 
-### 2. MCP Server (Node.js/TypeScript) - Legacy
-Order API için Model Context Protocol sunucusu. Web arayüzü ile test için ideal.
+**Location**: `chat-ui/`
+**Port**: 3000
+**Tech Stack**: React 18, TypeScript, Vite, Axios
 
-**Özellikler:**
-- Browser-based web interface
-- REST API wrapper
-- Claude Desktop entegrasyonu
-- MCP Inspector desteği
+### 2. **Chat API** (Spring Boot)
+AI-powered chatbot backend that:
+- Integrates with OpenAI GPT-4
+- Maintains conversation history per session
+- Dynamically discovers MCP tools
+- Applies generic parameter collection rules
+- Handles CORS for browser access
 
-**MCP Araçları:**
-- `create_order` - Yeni sipariş oluşturur
-- `get_all_orders` - Tüm siparişleri listeler
-- `get_order_by_id` - ID'ye göre sipariş getirir
-- `update_order` - Sipariş günceller
-- `delete_order` - Sipariş siler
+**Location**: `chat-api/`
+**Port**: 8082
+**Tech Stack**: Java 17, Spring Boot 3.2.0, WebClient
 
-### 3. MCP Server (Java/Spring AI) - Production Ready
-Spring AI MCP SDK kullanarak geliştirilmiş production-ready MCP sunucusu.
+**Key Features**:
+- **Generic Prompt Rules**: Automatically collects all required parameters before calling any function
+- **Dynamic Tool Discovery**: Builds OpenAI function definitions from MCP server at runtime
+- **Session Management**: Maintains conversation context across multiple interactions
 
-**Özellikler:**
-- Spring AI MCP Server Starter
-- STDIO transport (Claude Desktop native entegrasyon)
-- Type-safe Java implementation
-- RestTemplate based HTTP client
-- Comprehensive error handling
-- Structured logging
+### 3. **Order API MCP Server** (Spring Boot)
+MCP server that exposes order management operations as AI-callable tools:
 
-**Teknoloji Stack:**
-- Java 17
-- Spring Boot 3.4.1
-- Spring AI MCP
-- Maven 3.9+
-- Project Lombok
+**Location**: `order-api-mcp/`
+**Port**: 8081
+**Tech Stack**: Java 17, Spring Boot 3.2.0
 
-**MCP Araçları:**
-Aynı araçlar Node.js versiyonu ile uyumlu şekilde implement edilmiştir.
+**Available Tools**:
+- `get_all_orders` - Retrieves all orders
+- `get_order_by_id` - Gets a specific order by ID
+- `create_order` - Creates a new order
+- `update_order` - Updates an existing order
+- `delete_order` - Deletes an order
 
-## 🌐 Browser'dan Kullanım
+Each tool includes JSON schema for parameter validation.
 
-### Web Interface
-http://localhost:3001 adresinde interaktif bir arayüz:
+### 4. **Order API** (Spring Boot)
+Core order management REST API with:
+- CRUD operations for orders
+- Bean validation
+- Exception handling
+- Swagger documentation
+- In-memory data storage
 
-- 📋 Siparişleri listele
-- ➕ Yeni sipariş oluştur
-- 🔍 Sipariş ara
-- ✏️ Sipariş güncelle
-- 🗑️ Sipariş sil
-- 🧪 Hızlı test butonları
+**Location**: `order-api/`
+**Port**: 8080
+**Tech Stack**: Java 17, Spring Boot 3.2.0, OpenAPI 3
 
-## 🤖 AI ile Kullanım
+## 🎯 How It Works
 
-### Claude Desktop Konfigürasyonu
+### Dynamic Function Discovery Flow
 
-#### Seçenek 1: Java MCP Server (Önerilen)
+1. **Tool Discovery**: Chat API queries MCP Server for available tools
+2. **Schema Parsing**: Converts MCP tool definitions to OpenAI function format
+3. **Runtime Binding**: OpenAI receives function definitions dynamically
+4. **Parameter Collection**: Generic rules ensure all required params are collected
+5. **Function Execution**: MCP Client calls the appropriate MCP tool
+6. **Response Processing**: AI formats the result for natural conversation
 
-`~/Library/Application Support/Claude/claude_desktop_config.json`:
+### Generic Parameter Collection
 
-```json
-{
-  "mcpServers": {
-    "order-api-java": {
-      "command": "java",
-      "args": [
-        "-jar",
-        "/Users/storos/workspace/chatbot_genai_mcp/order-api-mcp-java/target/order-api-mcp-1.0.0.jar"
-      ],
-      "env": {
-        "ORDER_API_URL": "http://localhost:8080/api/orders"
-      }
-    }
-  }
-}
+The system uses **universal rules** instead of function-specific instructions:
+
+```
+1. Collect ALL required parameters before calling any function
+2. NEVER assume values - always ask the user explicitly
+3. When multiple options exist, ALWAYS ask user to specify
+4. For ambiguous requests:
+   a) First list available options
+   b) Then ask user to make specific choice
+5. Only call functions with complete parameters
 ```
 
-#### Seçenek 2: Node.js MCP Server (Docker)
+This approach makes the system **extensible** - any new MCP function automatically benefits from these rules without updating the system prompt.
 
-```json
-{
-  "mcpServers": {
-    "order-api": {
-      "command": "docker",
-      "args": ["exec", "-i", "order-api-mcp-container", "node", "dist/index.js"]
-    }
-  }
-}
+## 🛠️ Development
+
+### Run Services Locally
+
+#### Chat UI
+```bash
+cd chat-ui
+npm install
+npm run dev
 ```
 
-Claude Desktop'ı yeniden başlatın ve şu komutları kullanın:
-- "Tüm siparişleri listele"
-- "Ahmet Yılmaz için yeni bir sipariş oluştur"
-- "Sipariş 1'i CONFIRMED durumuna güncelle"
+#### Chat API
+```bash
+cd chat-api
+mvn spring-boot:run
+```
 
-## 🛠️ Geliştirme
+#### Order API MCP
+```bash
+cd order-api-mcp
+mvn spring-boot:run
+```
 
-### Order API'yi Geliştirmek
-
+#### Order API
 ```bash
 cd order-api
 mvn spring-boot:run
 ```
 
-### MCP Server'ı Geliştirmek
-
-#### Node.js MCP Server
+### Rebuild Docker Images
 
 ```bash
-cd order-api-mcp
-
-# TypeScript derle
-npm run build
-
-# Web interface başlat
-npm run web
-
-# MCP Inspector
-npm run inspector
-```
-
-#### Java MCP Server
-
-```bash
-cd order-api-mcp-java
-
-# Maven ile derle ve çalıştır
-mvn spring-boot:run
-
-# veya JAR oluştur
-mvn clean package
-
-# JAR'ı çalıştır
-java -jar target/order-api-mcp-1.0.0.jar
-```
-
-### Docker Image'larını Yeniden Build Etmek
-
-```bash
-# Order API
-docker build -t order-api:latest ./order-api
-
-# MCP Server (Node.js)
-docker build -t order-api-mcp:latest ./order-api-mcp
-
-# MCP Server (Java)
-cd order-api-mcp-java && ./build-docker.sh
-
-# Veya tümü için
+# Build all services
 docker-compose build
+
+# Or build individually
+docker build -t order-api:latest ./order-api
+docker build -t order-api-mcp:latest ./order-api-mcp
+docker build -t chat-api:latest ./chat-api
+docker build -t chat-ui:latest ./chat-ui
 ```
 
-## 🧪 Test
+## 🧪 Testing
 
-### API Testleri
-
+### Test Chat API
 ```bash
-# Tüm siparişleri listele
-curl http://localhost:8080/api/orders
-
-# Yeni sipariş oluştur
-curl -X POST http://localhost:8080/api/orders \
+curl -X POST http://localhost:8082/api/chat \
   -H "Content-Type: application/json" \
   -d '{
-    "customerName": "Ahmet Yılmaz",
-    "customerEmail": "ahmet@example.com",
-    "items": [{
-      "itemName": "Laptop",
-      "quantity": 1,
-      "price": 15000
-    }],
-    "totalAmount": 15000,
-    "status": "PENDING"
+    "message": "Show me my orders",
+    "sessionId": "test-session-001"
   }'
 ```
 
-### MCP Web API Testleri
-
+### Test MCP Server
 ```bash
-# MCP araçlarını listele
-curl http://localhost:3001/api/tools
+# List available tools
+curl http://localhost:8081/mcp/tools
 
-# Siparişleri MCP üzerinden getir
-curl http://localhost:3001/api/orders
+# Get all orders via MCP
+curl -X POST http://localhost:8081/mcp/call \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "get_all_orders",
+    "arguments": {}
+  }'
 ```
 
-## 📊 Container Yönetimi
+### Test Order API
+```bash
+# Get all orders
+curl http://localhost:8080/api/orders
 
-### Durumu Kontrol Et
+# Create order
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{
+    "customerName": "John Doe",
+    "customerEmail": "john@example.com",
+    "items": [{
+      "itemName": "Laptop",
+      "quantity": 1,
+      "price": 999.99
+    }],
+    "totalAmount": 999.99,
+    "status": "PENDING",
+    "address": "123 Main St"
+  }'
+```
+
+## 📊 Container Management
+
+### Check Status
 ```bash
 docker-compose ps
 ```
 
-### Logları Görüntüle
+### View Logs
 ```bash
-# Tüm servisler
+# All services
 docker-compose logs -f
 
-# Sadece Order API
-docker-compose logs -f order-api
-
-# Sadece MCP Server
-docker-compose logs -f order-api-mcp
+# Specific service
+docker-compose logs -f chat-api
 ```
 
-### Servisleri Durdur
+### Stop Services
 ```bash
 docker-compose down
 ```
 
-### Servisleri Yeniden Başlat
+### Restart Services
 ```bash
 docker-compose restart
 ```
 
-### Container'ları Temizle
-```bash
-# Container'ları durdur ve sil
-docker-compose down
+## 🔧 Configuration
 
-# Volume'ları da sil
-docker-compose down -v
+### Environment Variables
 
-# Image'ları da sil
-docker-compose down --rmi all
-```
+**Chat API**:
+- `OPENAI_API_KEY`: Your OpenAI API key (required)
+- `MCP_SERVER_URL`: MCP server endpoint (default: http://order-api-mcp:8081)
 
-## 🔧 Konfigürasyon
+**Order API MCP**:
+- `ORDER_API_URL`: Order API endpoint (default: http://order-api:8080/api/orders)
 
-### Ortam Değişkenleri
+**Chat UI**:
+- `VITE_API_URL`: Chat API endpoint (default: http://localhost:8082)
 
-**Order API:**
-- `SPRING_PROFILES_ACTIVE`: Spring profile (default: default)
-- Port: 8080
-
-**MCP Server (Node.js):**
-- `ORDER_API_URL`: Order API base URL (default: http://order-api:8080/api/orders)
-- Port: 3001
-
-**MCP Server (Java):**
-- `ORDER_API_URL`: Order API base URL (default: http://localhost:8080/api/orders)
-- Mode: STDIO (no web port)
-
-### docker-compose.yml Özelleştirme
+### Customizing docker-compose.yml
 
 ```yaml
 services:
-  order-api:
+  chat-api:
     environment:
-      - SPRING_PROFILES_ACTIVE=production
+      - OPENAI_API_KEY=your-key-here
+      - MCP_SERVER_URL=http://order-api-mcp:8081
     ports:
-      - "8081:8080"  # Farklı port kullan
-
-  order-api-mcp:
-    environment:
-      - ORDER_API_URL=http://order-api:8080/api/orders
-    ports:
-      - "3002:3001"  # Farklı port kullan
+      - "8082:8082"
 ```
 
-## 📚 Dokümantasyon
+## 📚 API Documentation
 
-- **Order API README**: [order-api/README.md](order-api/README.md)
-- **MCP Server (Node.js) README**: [order-api-mcp/README.md](order-api-mcp/README.md)
-- **MCP Server (Java) README**: [order-api-mcp-java/README.md](order-api-mcp-java/README.md)
-- **Swagger UI**: http://localhost:8080/swagger-ui.html
-- **OpenAPI Spec**: http://localhost:8080/v3/api-docs
+- **Order API Swagger**: http://localhost:8080/swagger-ui.html
+- **Order API OpenAPI Spec**: http://localhost:8080/v3/api-docs
+- **Chat API Health**: http://localhost:8082/api/chat/health
 
-## 🔄 Node.js vs Java Karşılaştırması
+## 🎨 Features Highlight
 
-| Özellik | Node.js MCP | Java MCP |
-|---------|-------------|----------|
-| **Language** | TypeScript | Java 17 |
-| **Framework** | Express.js | Spring Boot |
-| **MCP SDK** | @modelcontextprotocol/sdk | Spring AI MCP |
-| **Build Tool** | npm | Maven |
-| **Startup Time** | ~1-2s | ~3-5s |
-| **Memory Usage** | ~100-150MB | ~200-300MB |
-| **Web Interface** | Yes (port 3001) | No (STDIO only) |
-| **Production Ready** | Yes | Yes (Recommended) |
-| **Type Safety** | Strong | Strong |
-| **Use Case** | Quick testing, Web UI | Production, Enterprise |
+### 1. Dynamic Tool Discovery
+No hardcoded function definitions. The system automatically:
+- Queries MCP server for available tools
+- Parses tool schemas and descriptions
+- Generates OpenAI function definitions
+- Updates capabilities list in system prompt
+
+### 2. Generic Parameter Collection
+Universal rules apply to all functions:
+- Prevents assumptions about missing parameters
+- Handles ambiguous requests intelligently
+- Lists options before asking for selection
+- Ensures complete data before execution
+
+### 3. Conversation History
+Session-based memory:
+- Maintains context across interactions
+- Remembers previous function calls
+- Provides coherent multi-turn conversations
+- Isolated sessions per user
+
+### 4. Modern UI/UX
+Beautiful chat interface with:
+- User messages on the right (blue)
+- AI messages on the left (white)
+- Loading indicators
+- Function call badges
+- Smooth animations
+- Responsive design
 
 ## 🐛 Troubleshooting
 
-### Container başlamıyor
+### CORS Errors
+- Ensure `chat-api` has `WebConfig.java` with proper CORS settings
+- Check browser console for specific CORS issues
+- Verify allowed origins include `http://localhost:3000`
+
+### OpenAI API Errors
+- Verify `OPENAI_API_KEY` is set correctly
+- Check API key has sufficient credits
+- Review chat-api logs: `docker logs chat-api-container`
+
+### Container Won't Start
 ```bash
-# Logları kontrol et
+# Check logs
 docker-compose logs
 
-# Health check durumu
+# Check health status
 docker inspect order-api-container | jq '.[0].State.Health'
+
+# Restart specific service
+docker-compose restart chat-api
 ```
 
-### Port çakışması
+### Port Conflicts
 ```bash
-# Portları değiştir (docker-compose.yml'de)
-# Veya çalışan servisleri durdur
+# Find process using port
+lsof -ti:8080
+
+# Kill process
 lsof -ti:8080 | xargs kill -9
-lsof -ti:3001 | xargs kill -9
 ```
 
-### Network sorunları
-```bash
-# Network'ü yeniden oluştur
-docker-compose down
-docker network prune
-docker-compose up -d
-```
+## 🚧 Roadmap
 
-## 📝 Lisans
+- [ ] Add authentication and user management
+- [ ] Implement persistent database (PostgreSQL)
+- [ ] Add more MCP tools (shipping, returns, refunds)
+- [ ] Implement rate limiting
+- [ ] Add comprehensive test coverage
+- [ ] Deploy to production environment
+- [ ] Add monitoring and observability
+- [ ] Multi-language support
+
+## 📝 License
 
 MIT
 
-## 🤝 Katkıda Bulunma
+## 🤝 Contributing
 
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
-5. Pull Request açın
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## 📞 İletişim
+## 📞 Contact
 
-Sorularınız için issue açabilirsiniz.
+For questions or issues, please open a GitHub issue.
+
+---
+
+**Built with** ❤️ **using Model Context Protocol, OpenAI GPT-4, Spring Boot, and React**
