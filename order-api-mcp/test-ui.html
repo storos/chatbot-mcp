@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order API MCP Server - Test UI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #34495e;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        button.danger {
+            background: #e74c3c;
+        }
+        button.danger:hover {
+            background: #c0392b;
+        }
+        button.success {
+            background: #2ecc71;
+        }
+        button.success:hover {
+            background: #27ae60;
+        }
+        .result {
+            background: #2c3e50;
+            color: #2ecc71;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 500px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .result.error {
+            color: #e74c3c;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .status.online {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+        .status.offline {
+            background: #fadbd8;
+            color: #e74c3c;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        textarea {
+            min-height: 150px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #34495e;
+            font-weight: 500;
+        }
+        .endpoint {
+            background: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: 'Monaco', monospace;
+            font-size: 13px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Order API MCP Server - Test UI</h1>
+        <p class="subtitle">Java/Spring Boot Implementation - Port 8081</p>
+
+        <div class="section">
+            <h2>Server Status</h2>
+            <div id="status" class="status offline">Checking...</div>
+            <div class="endpoint">http://localhost:8081</div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 MCP Tools</h2>
+            <div class="button-group">
+                <button onclick="listTools()">List Tools</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Orders</h2>
+            <div class="button-group">
+                <button onclick="getAllOrders()">Get All Orders</button>
+                <button onclick="getOrderById()">Get Order by ID</button>
+            </div>
+            <input type="number" id="orderId" placeholder="Enter Order ID (for Get by ID)" value="1">
+        </div>
+
+        <div class="section">
+            <h2>➕ Create Order</h2>
+            <label>Order JSON:</label>
+            <textarea id="createOrderData">{
+  "customerName": "John Doe",
+  "customerEmail": "john@example.com",
+  "items": [{
+    "itemName": "Laptop",
+    "quantity": 1,
+    "price": 999.99
+  }],
+  "totalAmount": 999.99,
+  "status": "PENDING"
+}</textarea>
+            <button class="success" onclick="createOrder()">Create Order</button>
+        </div>
+
+        <div class="section">
+            <h2>✏️ Update Order</h2>
+            <input type="number" id="updateOrderId" placeholder="Order ID to update" value="1">
+            <textarea id="updateOrderData">{
+  "customerName": "Jane Doe",
+  "customerEmail": "jane@example.com",
+  "items": [{
+    "itemName": "Laptop",
+    "quantity": 2,
+    "price": 999.99
+  }],
+  "totalAmount": 1999.98,
+  "status": "CONFIRMED"
+}</textarea>
+            <button onclick="updateOrder()">Update Order</button>
+        </div>
+
+        <div class="section">
+            <h2>🗑️ Delete Order</h2>
+            <input type="number" id="deleteOrderId" placeholder="Order ID to delete">
+            <button class="danger" onclick="deleteOrder()">Delete Order</button>
+        </div>
+
+        <div class="section">
+            <h2>📊 Response</h2>
+            <div id="result" class="result">Results will appear here...</div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8081';
+        const resultDiv = document.getElementById('result');
+        const statusDiv = document.getElementById('status');
+
+        // Check server status on load
+        checkStatus();
+
+        async function checkStatus() {
+            try {
+                const response = await fetch(`${BASE_URL}/mcp/tools`);
+                if (response.ok) {
+                    statusDiv.textContent = 'Online';
+                    statusDiv.className = 'status online';
+                } else {
+                    statusDiv.textContent = 'Offline';
+                    statusDiv.className = 'status offline';
+                }
+            } catch (error) {
+                statusDiv.textContent = 'Offline';
+                statusDiv.className = 'status offline';
+            }
+        }
+
+        async function apiCall(url, method = 'GET', body = null) {
+            resultDiv.textContent = '⏳ Loading...';
+            resultDiv.className = 'result';
+
+            try {
+                const options = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (body) options.body = JSON.stringify(body);
+
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.className = 'result';
+
+                checkStatus();
+            } catch (error) {
+                resultDiv.textContent = `❌ Error: ${error.message}\n\nMake sure the server is running on port 8081`;
+                resultDiv.className = 'result error';
+                checkStatus();
+            }
+        }
+
+        function listTools() {
+            apiCall(`${BASE_URL}/mcp/tools`);
+        }
+
+        function getAllOrders() {
+            apiCall(`${BASE_URL}/mcp/orders`);
+        }
+
+        function getOrderById() {
+            const id = document.getElementById('orderId').value;
+            if (!id) {
+                alert('Please enter an Order ID');
+                return;
+            }
+            apiCall(`${BASE_URL}/mcp/orders/${id}`);
+        }
+
+        function createOrder() {
+            try {
+                const data = JSON.parse(document.getElementById('createOrderData').value);
+                apiCall(`${BASE_URL}/mcp/orders`, 'POST', data);
+            } catch (error) {
+                alert('Invalid JSON: ' + error.message);
+            }
+        }
+
+        function updateOrder() {
+            const id = document.getElementById('updateOrderId').value;
+            if (!id) {
+                alert('Please enter an Order ID');
+                return;
+            }
+            try {
+                const data = JSON.parse(document.getElementById('updateOrderData').value);
+                apiCall(`${BASE_URL}/mcp/orders/${id}`, 'PUT', data);
+            } catch (error) {
+                alert('Invalid JSON: ' + error.message);
+            }
+        }
+
+        function deleteOrder() {
+            const id = document.getElementById('deleteOrderId').value;
+            if (!id) {
+                alert('Please enter an Order ID');
+                return;
+            }
+            if (confirm(`Are you sure you want to delete order ${id}?`)) {
+                apiCall(`${BASE_URL}/mcp/orders/${id}`, 'DELETE');
+            }
+        }
+    </script>
+</body>
+</html>

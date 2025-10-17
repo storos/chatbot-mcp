@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # Spring Boot Order API
+  order-api:
+    container_name: order-api-container
+    image: order-api:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/orders"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - order-network
+
+  # MCP Server (Java/Spring Boot) - Production Ready
+  order-api-mcp:
+    container_name: order-api-mcp-container
+    image: order-api-mcp:latest
+    ports:
+      - "8081:8081"
+    environment:
+      - ORDER_API_URL=http://order-api:8080/api/orders
+    depends_on:
+      order-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/mcp/tools"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - order-network
+
+  # Chat API - E-commerce Customer Support Chatbot
+  chat-api:
+    container_name: chat-api-container
+    image: chat-api:latest
+    ports:
+      - "8082:8082"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MCP_SERVER_URL=http://order-api-mcp:8081
+    depends_on:
+      order-api-mcp:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/api/chat/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - order-network
+
+  # Chat UI - React TypeScript Frontend
+  chat-ui:
+    container_name: chat-ui-container
+    image: chat-ui:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8082
+    depends_on:
+      - chat-api
+    networks:
+      - order-network
+
+networks:
+  order-network:
+    driver: bridge
