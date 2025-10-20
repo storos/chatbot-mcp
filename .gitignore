@@ -53,3 +53,6 @@ Thumbs.db
 # Test coverage
 coverage/
 *.lcov
+
+# Documentation drafts
+MEDIUM_ARTICLE.md
