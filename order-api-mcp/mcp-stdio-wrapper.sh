@@ -71,7 +71,7 @@ EOF
                         -H "Content-Type: application/json" \
                         -d "$arguments")
                     ;;
-                "delete_order")
+                "cancel_order")
                     order_id=$(echo "$arguments" | jq -r '.orderId')
                     result=$(curl -s -X DELETE "${SERVER_URL}/mcp/orders/${order_id}")
                     ;;

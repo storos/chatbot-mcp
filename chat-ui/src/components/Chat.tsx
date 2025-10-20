@@ -9,6 +9,7 @@ const Chat: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(() => `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
   const [error, setError] = useState<string | null>(null);
+  const [expandedFunctions, setExpandedFunctions] = useState<Set<string>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -74,6 +75,23 @@ const Chat: React.FC = () => {
     });
   };
 
+  const toggleFunctionExpand = (messageIndex: number, functionIndex: number) => {
+    const key = `${messageIndex}-${functionIndex}`;
+    setExpandedFunctions(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(key)) {
+        newSet.delete(key);
+      } else {
+        newSet.add(key);
+      }
+      return newSet;
+    });
+  };
+
+  const isFunctionExpanded = (messageIndex: number, functionIndex: number) => {
+    return expandedFunctions.has(`${messageIndex}-${functionIndex}`);
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-header">
@@ -114,11 +132,42 @@ const Chat: React.FC = () => {
               {message.functionsCalled && message.functionsCalled.length > 0 && (
                 <div className="function-calls">
                   <strong>Çağrılan Fonksiyonlar:</strong>
-                  {message.functionsCalled.map((func, idx) => (
-                    <div key={idx} className="function-call">
-                      → {func.functionName}
-                    </div>
-                  ))}
+                  {message.functionsCalled.map((func, funcIdx) => {
+                    const isExpanded = isFunctionExpanded(index, funcIdx);
+                    return (
+                      <div key={funcIdx} className="function-call-item">
+                        <div
+                          className="function-call-header"
+                          onClick={() => toggleFunctionExpand(index, funcIdx)}
+                        >
+                          <span className="function-expand-icon">
+                            {isExpanded ? '▼' : '▶'}
+                          </span>
+                          <span className="function-name">
+                            {func.functionName}
+                          </span>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="function-call-details">
+                            <div className="function-detail-section">
+                              <div className="function-detail-label">Request:</div>
+                              <pre className="function-detail-content">
+                                {JSON.stringify(func.request, null, 2)}
+                              </pre>
+                            </div>
+
+                            <div className="function-detail-section">
+                              <div className="function-detail-label">Response:</div>
+                              <pre className="function-detail-content">
+                                {JSON.stringify(func.response, null, 2)}
+                              </pre>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

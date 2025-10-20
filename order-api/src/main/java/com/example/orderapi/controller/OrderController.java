@@ -129,13 +129,13 @@ public class OrderController {
     }
 
     @Operation(
-            summary = "Delete an order",
-            description = "Deletes an order by its unique identifier."
+            summary = "Cancel an order",
+            description = "Cancels an order by its unique identifier."
     )
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "204",
-                    description = "Order deleted successfully"
+                    description = "Order cancelled successfully"
             ),
             @ApiResponse(
                     responseCode = "404",
@@ -144,12 +144,12 @@ public class OrderController {
             )
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(
-            @Parameter(description = "ID of the order to delete", required = true)
+    public ResponseEntity<Void> cancelOrder(
+            @Parameter(description = "ID of the order to cancel", required = true)
             @PathVariable Long id) {
-        log.info("DELETE /api/orders/{} - Request", id);
-        orderService.deleteOrder(id);
-        log.info("DELETE /api/orders/{} - Successfully deleted", id);
+        log.info("DELETE /api/orders/{} - Cancel request", id);
+        orderService.cancelOrder(id);
+        log.info("DELETE /api/orders/{} - Successfully cancelled", id);
         return ResponseEntity.noContent().build();
     }
 

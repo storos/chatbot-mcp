@@ -54,8 +54,8 @@ public class McpController {
                 )
             ),
             Map.of(
-                "name", "delete_order",
-                "description", "Sipariş siler",
+                "name", "cancel_order",
+                "description", "Sipariş iptal eder",
                 "method", "DELETE",
                 "endpoint", "/mcp/orders/{id}",
                 "inputSchema", Map.of(
@@ -142,14 +142,14 @@ public class McpController {
     }
 
     @DeleteMapping("/orders/{id}")
-    public ResponseEntity<Map<String, String>> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<Map<String, String>> cancelOrder(@PathVariable Long id) {
         try {
-            log.info("Deleting order with ID: {}", id);
-            orderApiService.deleteOrder(id);
-            return ResponseEntity.ok(Map.of("message", String.format("Sipariş %d başarıyla silindi.", id)));
+            log.info("Cancelling order with ID: {}", id);
+            orderApiService.cancelOrder(id);
+            return ResponseEntity.ok(Map.of("message", String.format("Sipariş %d başarıyla iptal edildi.", id)));
         } catch (Exception e) {
-            log.error("Error deleting order with ID: {}", id, e);
-            throw new RuntimeException("Failed to delete order: " + e.getMessage(), e);
+            log.error("Error cancelling order with ID: {}", id, e);
+            throw new RuntimeException("Failed to cancel order: " + e.getMessage(), e);
         }
     }
 

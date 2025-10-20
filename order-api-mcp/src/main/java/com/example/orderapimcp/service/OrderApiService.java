@@ -91,9 +91,9 @@ public class OrderApiService {
         }
     }
 
-    public void deleteOrder(Long orderId) {
+    public void cancelOrder(Long orderId) {
         try {
-            log.info("Deleting order with ID: {}", orderId);
+            log.info("Cancelling order with ID: {}", orderId);
             restTemplate.exchange(
                 config.getBaseUrl() + "/" + orderId,
                 HttpMethod.DELETE,
@@ -101,8 +101,8 @@ public class OrderApiService {
                 Void.class
             );
         } catch (Exception e) {
-            log.error("Error deleting order with ID: {}", orderId, e);
-            throw new RuntimeException("Failed to delete order: " + e.getMessage(), e);
+            log.error("Error cancelling order with ID: {}", orderId, e);
+            throw new RuntimeException("Failed to cancel order: " + e.getMessage(), e);
         }
     }
 

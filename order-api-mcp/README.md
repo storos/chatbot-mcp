@@ -29,7 +29,7 @@ MCP sunucusu aşağıdaki araçları (tools) sağlar:
 - **get_all_orders**: Tüm siparişleri listeler
 - **get_order_by_id**: ID'ye göre sipariş getirir
 - **update_order**: Mevcut siparişi günceller
-- **delete_order**: Sipariş siler
+- **cancel_order**: Sipariş iptal eder
 
 ## Kurulum
 
@@ -176,9 +176,9 @@ ID'si 1 olan siparişi göster
 Sipariş 1'i CONFIRMED durumuna güncelle
 ```
 
-### Sipariş Silme
+### Sipariş İptal Etme
 ```
-Sipariş 1'i sil
+Sipariş 1'i iptal et
 ```
 
 ## Proje Yapısı
@@ -255,11 +255,11 @@ Mevcut siparişi günceller.
 
 **Dönen Değer:** JSON formatında güncellenmiş sipariş bilgisi
 
-#### delete_order
-Sipariş siler.
+#### cancel_order
+Sipariş iptal eder.
 
 **Parametreler:**
-- `orderId` (Long): Silinecek sipariş ID'si
+- `orderId` (Long): İptal edilecek sipariş ID'si
 
 **Dönen Değer:** Başarı mesajı
 

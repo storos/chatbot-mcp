@@ -117,7 +117,7 @@ MCP server that exposes order management operations as AI-callable tools:
 - `get_order_by_id` - Gets a specific order by ID
 - `create_order` - Creates a new order
 - `update_order` - Updates an existing order
-- `delete_order` - Deletes an order
+- `cancel_order` - Cancels an order
 
 Each tool includes JSON schema for parameter validation.
 

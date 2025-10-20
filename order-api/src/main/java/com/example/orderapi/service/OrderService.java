@@ -117,13 +117,13 @@ public class OrderService {
     }
 
     /**
-     * Delete order - simulates successful deletion
+     * Cancel order - simulates successful cancellation
      */
-    public void deleteOrder(Long id) {
+    public void cancelOrder(Long id) {
         if (id == null || id <= 0) {
             throw new OrderNotFoundException("Order with ID " + id + " not found");
         }
-        // Simulate successful deletion (do nothing)
+        // Simulate successful cancellation (do nothing)
     }
 
     /**
